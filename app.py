@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+sockets = Sockets(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
