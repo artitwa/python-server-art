@@ -87,17 +87,15 @@ def ws_event(ws, app_id=None, client_id=None):
 			continue
 
 		msg_obj = json.loads(message)
+		object_id = msg_obj['object_id'].encode('utf-8')
 		sender_id = msg_obj['user_id'].encode('utf-8')
 		title = msg_obj['title'].encode('utf-8')
 		content = msg_obj['content'].encode('utf-8')
 		category = msg_obj['category'].encode('utf-8')
-		status = 'active'
 
 		out_obj = {
-			'id': db_row.id,
 			'title': title,
 			'object_id': app_id,
-			'created_at': db_row.created_at,
 			'user_id': client_id,
 			'content': content,
 			'category': category
