@@ -65,7 +65,6 @@ def get_user():
 
 WS_EVENT_CLIENTS = []
 @sockets.route('/event/<app_id>/<client_id>')
-@cross_origin()
 def ws_event(ws, app_id=None, client_id=None):
 	global WS_EVENT_CLIENTS
 
