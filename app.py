@@ -3,6 +3,7 @@ import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask.ext.cors import CORS, cross_origin
+from flask_sockets import Sockets
 from datetime import datetime
 
 app = Flask(__name__)
@@ -58,6 +59,55 @@ def get_user():
 	}
 	
 	return jsonify(user=user_json)
+
+WS_EVENT_CLIENTS = []
+@sockets.route('/event/<app_id>/<client_id>')
+def ws_event(ws, app_id=None, client_id=None):
+	global WS_EVENT_CLIENTS
+
+	if client_id is not None:
+		client_id = client_id.encode('utf-8')
+
+	app_id = app_id.encode('utf-8')
+
+	this_client = {
+		'ws_object': ws,
+		'app_id': app_id,
+		'client_id': client_id
+	}
+
+	WS_EVENT_CLIENTS.append(this_client)
+
+	while not ws.closed:
+		message = ws.receive()
+
+		if message is None:
+			if ws.closed:
+				break
+			continue
+
+		msg_obj = json.loads(message)
+		sender_id = msg_obj['user_id'].encode('utf-8')
+		title = msg_obj['title'].encode('utf-8')
+		content = msg_obj['content'].encode('utf-8')
+		category = msg_obj['category'].encode('utf-8')
+		status = 'active'
+
+		out_obj = {
+			'id': db_row.id,
+			'title': title,
+			'object_id': app_id,
+			'created_at': db_row.created_at,
+			'user_id': client_id,
+			'content': content,
+			'category': category
+		}
+
+	for cl in WS_EVENT_CLIENTS:
+		if cl['client_id'] is None:
+			cl['ws_object'].send(json.dumps(out_obj))
+
+	WS_EVENT_CLIENTS.remove(this_client)
 
 if __name__ == '__main__':
 
