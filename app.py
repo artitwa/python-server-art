@@ -2,7 +2,7 @@ import os
 import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask.ext.cors import CORS, cross_origin
+from flask_cors import CORS, cross_origin
 from flask_sockets import Sockets
 from datetime import datetime
 
@@ -77,6 +77,8 @@ def ws_event(ws, app_id=None, client_id=None):
 		'client_id': client_id
 	}
 
+	print(json.dumps(this_client, indent=2, sort_keys=False))
+
 	WS_EVENT_CLIENTS.append(this_client)
 
 	while not ws.closed:
@@ -86,6 +88,8 @@ def ws_event(ws, app_id=None, client_id=None):
 			if ws.closed:
 				break
 			continue
+
+		print(json.dumps(message, indent=2, sort_keys=False))
 
 		msg_obj = json.loads(message)
 		object_id = msg_obj['object_id'].encode('utf-8')
