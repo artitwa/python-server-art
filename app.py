@@ -6,6 +6,8 @@ from flask_cors import CORS, cross_origin
 from flask_sockets import Sockets
 from datetime import datetime
 
+import json
+
 app = Flask(__name__)
 # connect to SQL database with username, password and address
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -63,6 +65,7 @@ def get_user():
 
 WS_EVENT_CLIENTS = []
 @sockets.route('/event/<app_id>/<client_id>')
+@cross_origin()
 def ws_event(ws, app_id=None, client_id=None):
 	global WS_EVENT_CLIENTS
 
